@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore visible car damage and illustrative repair estimates with AutoQuote AI.">
+  <title>AutoQuote AI · Car damage assessment</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#assessment">Skip to assessment</a>
+  <header class="site-header shell">
+    <a class="brand" href="/" aria-label="AutoQuote AI home"><span class="brand-icon" aria-hidden="true">A</span>AutoQuote<span class="brand-ai">AI</span></a>
+    <nav class="header-links" aria-label="Main navigation"><a href="#assessment">ASSESSMENT</a><a href="#howItWorks">HOW IT WORKS</a></nav>
+    <span class="status" id="serviceStatus">Connecting…</span>
+  </header>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> AUTOMOTIVE DAMAGE ASSESSMENT</div>
+        <h1>DAMAGE.<br><em>DECODED.</em></h1>
+        <p>One photo. A closer look at the damage.<br>A clearer starting point for your next repair.</p>
+        <div class="hero-tags"><span>IMAGE ANALYSIS</span><span>INR ESTIMATES</span><span>LOCAL PROCESSING</span></div>
+      </div>
+      <div class="hero-instrument" aria-hidden="true">
+        <div class="instrument-heading"><span>AUTOQUOTE / VISION</span><span>01—03</span></div>
+        <svg class="vehicle-blueprint" viewBox="0 0 420 200" fill="none">
+          <path d="M22 155h376M55 135l12-38 65-13 43-43h107l54 45 40 13 17 35v25h-40m-58 0H145m-57 0H54v-24Z" stroke="currentColor" stroke-width="2"/>
+          <path d="m145 83 38-34h89l39 34H145Zm76-34v34M73 103h31m239 0h28M164 99h22m65 0h22M157 88v46m135-46v46" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="116" cy="151" r="28" stroke="currentColor" stroke-width="2"/><circle cx="116" cy="151" r="15" stroke="currentColor"/><circle cx="324" cy="151" r="28" stroke="currentColor" stroke-width="2"/><circle cx="324" cy="151" r="15" stroke="currentColor"/>
+          <path d="M51 74V60h20m298 23h18v18M51 154v20h20m312-17v20h-20" stroke="#ff651c" stroke-width="3"/>
+          <path d="m341 100 37-61h27" stroke="#ff651c"/><circle cx="341" cy="100" r="5" fill="#ff651c"/>
+        </svg>
+        <div class="instrument-bottom"><span>CAPTURE<br><b>THE DETAILS.</b></span><span class="instrument-arrow">↗</span></div>
+      </div>
+    </section>
+
+    <div class="notice demo-notice" id="demoNotice" hidden><strong>Demo mode</strong> · Results are fixed examples to explore the app. They do not describe your photo.</div>
+    <div class="notice" id="setupNotice" hidden><strong>Model setup needed.</strong> The interface is ready. Follow the README to add the trained checkpoint, or start in demo mode.</div>
+
+    <section class="workspace" id="assessment" aria-label="Car damage assessment">
+      <form class="card input-card" id="assessmentForm">
+        <div class="section-heading"><span class="step">01</span><div><h2>Your vehicle</h2><p>A few details to put the estimate in context.</p></div></div>
+        <div class="field-row">
+          <div class="field"><label for="carMake">Manufacturer</label><select id="carMake" name="car_make" required disabled><option value="">Loading…</option></select></div>
+          <div class="field"><label for="carModel">Model</label><select id="carModel" name="car_model" required disabled><option value="">Select manufacturer first</option></select></div>
+        </div>
+        <div class="section-heading photo-heading"><span class="step">02</span><div><h2>Add a photo</h2><p>Use a clear, well-lit view of the affected area.</p></div></div>
+        <input class="visually-hidden" id="fileInput" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Select a car image">
+        <button class="drop-zone" id="dropZone" type="button" aria-describedby="uploadHint">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="5" y="8" width="30" height="26" rx="6" stroke="currentColor" stroke-width="1.5"/><path d="m7 28 9-9 8 8 4-4 6 6M20 3v11m-4-7 4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <strong>Drop your image here</strong><span>or click to browse files</span><small id="uploadHint">JPEG, PNG or WebP · up to 10 MB / 20 MP</small>
+        </button>
+        <div class="file-details" id="fileDetails" hidden><span id="fileName"></span><button type="button" class="text-button" id="removeFile">Remove</button></div>
+        <div class="preview-wrap" id="previewWrap" hidden><img id="previewImg" alt="Selected car photo"><canvas id="overlayCanvas" aria-hidden="true"></canvas></div>
+        <div class="field notes-field"><label for="damageDescription">Your notes <span>(optional)</span></label><textarea id="damageDescription" name="description" rows="2" maxlength="1000" placeholder="For example: Scraped the front bumper while parking"></textarea><small>Included in your report. Notes do not change the model's predictions.</small></div>
+        <button class="primary-button" id="analyseButton" type="submit" disabled>Analyse image <span aria-hidden="true">↗</span></button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite">Choose a vehicle and add an image to get started.</p>
+        <p class="error-message" id="errorMessage" role="alert" hidden></p>
+      </form>
+
+      <section class="card result-card" aria-labelledby="resultsHeading" aria-busy="false" id="resultCard">
+        <div class="result-header"><div class="section-heading"><span class="step">03</span><div><h2 id="resultsHeading">Your assessment</h2><p id="resultSubtitle">The details, in one place.</p></div></div><span class="small-tag" id="resultTag">AWAITING PHOTO</span></div>
+        <div class="empty-state" id="emptyState"><div class="scan-target" aria-hidden="true"><span class="scan-cross"></span><span class="scan-label">AWAITING INPUT</span></div><h3>READY WHEN YOU ARE.</h3><p>Add a photo to see damage markers<br>and an itemised repair estimate.</p><div class="empty-steps"><span>01 Upload</span><span>02 Analyse</span><span>03 Review</span></div></div>
+        <div id="results" hidden>
+          <div class="estimate-summary"><span id="estimateLabel">Illustrative repair estimate</span><strong id="totalCost"></strong><p id="vehicleSummary"></p></div>
+          <p class="notice compact" id="unpricedNotice" hidden></p>
+          <p class="notice compact" id="noDamageNotice" hidden>No supported damage was detected in this image. This does not confirm that the vehicle is undamaged.</p>
+          <div class="breakdown-title"><h3>Repair breakdown</h3><span id="detectionCount"></span></div>
+          <div id="costItems" class="cost-items"></div>
+          <details class="detection-details"><summary>View detection confidence</summary><ul id="confidenceList"></ul><p>Confidence is model certainty, not damage severity.</p></details>
+          <div class="report-notes" id="reportNotes" hidden><h3>Your notes</h3><p id="reportNotesText"></p></div>
+          <p class="estimate-note" id="estimateDisclaimer"></p>
+          <button class="secondary-button" type="button" id="downloadReport">Download report <span aria-hidden="true">↓</span></button>
+        </div>
+        <div class="result-footer"><span class="privacy-dot"></span>Photos are processed for this request and are not retained by the app.</div>
+      </section>
+    </section>
+    <section class="explainer" id="howItWorks"><div><span>01 / VISIBLE DAMAGE</span><h3>A second look at the surface.</h3><p>Detects supported dents, scratches and damaged components in your photo.</p></div><div><span>02 / TRANSPARENT PRICING</span><h3>Know what's in the number.</h3><p>Sample costs are grouped by damage type. Unpriced items are flagged for inspection.</p></div><div><span>03 / NEXT STEP</span><h3>Take it to a professional.</h3><p>A photo cannot reveal hidden damage. Confirm the scope and price with a workshop.</p></div></section>
+  </main>
+  <footer class="site-footer shell"><span class="footer-brand">AutoQuote AI</span><span>An academic computer-vision project · Illustrative estimates only</span></footer>
+</body>
+</html>

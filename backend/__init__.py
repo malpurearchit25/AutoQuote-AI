@@ -1,0 +1,1 @@
+"""AutoQuote AI application."""
